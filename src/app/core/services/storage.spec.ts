@@ -17,7 +17,7 @@ describe('Storage', () => {
 
   it('deve salvar um objeto convertido em string no localstorage', () => {
     const mockData = {id: 1, name: 'Admin'}
-    const key: string = 'user_session'
+    const key = 'user_session'
     service.setItem(key, mockData)
 
     const storedValue = localStorage.getItem(key)
@@ -26,7 +26,7 @@ describe('Storage', () => {
 
   it('deve recuperar e parsear um objeto do localstorage', () => {
     const mockData = { token: 'jwt-token-xyz'}
-    const key: string = 'auth_token'
+    const key = 'auth_token'
     localStorage.setItem(key, JSON.stringify(mockData))
 
     const result = service.getItem<{token: string}>(key)
@@ -39,7 +39,7 @@ describe('Storage', () => {
   })
 
   it ('deve remover o item do localStorage', () => {
-    const key: string = 'teste'
+    const key = 'teste'
     localStorage.setItem(key, '123')
     service.removeItem(key)
     expect(localStorage.getItem(key)).toBeNull()

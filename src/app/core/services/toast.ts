@@ -5,7 +5,7 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
   providedIn: 'root',
 })
 export class Toast {
-  private defaultDuration: number = 4000
+  private defaultDuration = 4000
   private verticalPosition: MatSnackBarVerticalPosition = 'top'
   private horizontalPosition: MatSnackBarHorizontalPosition = 'end'
 
