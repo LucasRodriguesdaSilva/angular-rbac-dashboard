@@ -30,6 +30,5 @@ jobs:
       - name: Angular Build Validation
         run: npx ng build --configuration=production
 
-      # ALTERAÇÃO AQUI: Comando nativo do Vitest para rodar e finalizar imediatamente na esteira
-      - name: Run Unit Tests (Vitest TDD Check)
-        run: npx vitest run
+      - name: Run Unit Tests (Angular)
+        run: npx ng test --watch=false
