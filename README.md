@@ -128,18 +128,9 @@ ng serve
 
 * Executar testes em segundo plano (Modo CI/CD / Single Run):
 ```bash
-npx vitest run
+npm run test
 
 ```
-
-
-* Abrir o Painel Interativo de Testes no Navegador (Vitest UI):
-```bash
-npx vitest --ui
-
-```
-
-
 
 ---
 
