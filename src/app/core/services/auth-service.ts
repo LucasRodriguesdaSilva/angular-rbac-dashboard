@@ -10,12 +10,12 @@ export class AuthService {
   /**
    * @constant STORAGE_USER_SESSION_KEY - Chave do storage para a sessão do usuário
    */
-  public STORAGE_USER_SESSION_KEY = 'user_session';
+  private readonly STORAGE_USER_SESSION_KEY = 'user_session';
 
   /**
    * @constant STORAGE_AUTH_REFRESH_TOKEN_KEY - Chave do storage para os tokens do usuário
    */
-  public STORAGE_AUTH_REFRESH_TOKEN_KEY = 'auth_refresh_token';
+  private readonly STORAGE_AUTH_REFRESH_TOKEN_KEY = 'auth_refresh_token';
 
   /**
    * @private {BehaviorSubject} currentUserSubject$

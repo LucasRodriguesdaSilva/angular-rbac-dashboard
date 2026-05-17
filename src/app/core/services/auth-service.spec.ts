@@ -39,7 +39,6 @@ describe('AuthService', () => {
   };
 
   it('deve inicializar deslogado se não houver tokens no storage', () => {
-    // CORREÇÃO 2: Alterado de withImplementation para mockImplementation
     storageServiceMock.getItem.mockImplementation(() => null);
     createService();
 
@@ -48,7 +47,6 @@ describe('AuthService', () => {
   });
 
   it('deve restaurar a sessão automaticamente no reload se houver tokens válidos', () => {
-    // CORREÇÃO 2: Alinhando chaves de busca ao mecanismo seguro de hidratação
     storageServiceMock.getItem.mockImplementation((key: string) => {
       if (key === 'auth_refresh_token') return mockTokens.refreshToken;
       if (key === 'user_session') return mockUser;
@@ -71,7 +69,6 @@ describe('AuthService', () => {
     // Act
     service.setSession(mockTokens, mockUser);
 
-    // Assert - CORREÇÃO 3: Validando as chaves exclusivas de mitigação XSS
     expect(storageServiceMock.setItem).toHaveBeenCalledWith('auth_refresh_token', mockTokens.refreshToken);
     expect(storageServiceMock.setItem).toHaveBeenCalledWith('user_session', mockUser);
     expect(service.isAuthenticated).toBeTruthy();
@@ -88,7 +85,6 @@ describe('AuthService', () => {
 
     service.logout();
 
-    // CORREÇÃO 4: Assegurando a remoção das chaves corretas de persistência mínima
     expect(storageServiceMock.removeItem).toHaveBeenCalledWith('auth_refresh_token');
     expect(storageServiceMock.removeItem).toHaveBeenCalledWith('user_session');
     expect(service.isAuthenticated).toBeFalsy();
