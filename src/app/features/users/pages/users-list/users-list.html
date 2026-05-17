@@ -1,0 +1,101 @@
+<div class="container-fluid p-6 position-relative">
+  <div class="mb-4">
+    <h2 class="text-xl font-bold tracking-tight text-gray-900">Gestão de Usuários</h2>
+    <p class="text-sm text-gray-500">
+      Administração de credenciais, controle de claims de acesso e monitoramento de perfis.
+    </p>
+  </div>
+
+  <div class="bg-white p-4 rounded-lg shadow-sm mb-4">
+    <mat-form-field appearance="outline" class="w-full max-w-md">
+      <mat-label>Buscar usuário por nome ou e-mail</mat-label>
+      <input
+        matInput
+        [formControl]="searchControl"
+        placeholder="Ex: Admin Blue Team..."
+        autocomplete="off"
+      />
+    </mat-form-field>
+  </div>
+
+  @if (isLoading) {
+    <div class="position-absolute top-50 start-50 translate-middle z-3">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  }
+
+  <div class="mat-elevation-z1 rounded-lg overflow-hidden bg-white">
+    <table mat-table [dataSource]="dataSource" class="w-full">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-700">Nome</th>
+        <td mat-cell *matCellDef="let element" class="font-medium text-gray-900">
+          {{ element.name }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-700">E-mail</th>
+        <td mat-cell *matCellDef="let element">{{ element.email }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-700">Papel (Role)</th>
+        <td mat-cell *matCellDef="let element">
+          <span
+            class="px-2 py-1 rounded text-xs font-semibold uppercase tracking-wider"
+            [ngClass]="
+              element.role === 'ADMIN' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
+            "
+          >
+            {{ element.role }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-700">Status</th>
+        <td mat-cell *matCellDef="let element">
+          <span
+            class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium"
+            [ngClass]="
+              element.active
+                ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20'
+                : 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20'
+            "
+          >
+            {{ element.active ? 'Ativo' : 'Inativo' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef class="font-semibold text-gray-700">Criado em</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="hover:bg-gray-50 transition-colors"
+      ></tr>
+    </table>
+
+    @if (dataSource.data.length === 0 && !isLoading) {
+      <div class="p-8 text-center text-gray-500">
+        Nenhum usuário foi localizado com as claims especificadas.
+      </div>
+    }
+
+    <mat-paginator
+      [length]="totalRecords"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 25]"
+      (page)="onPageChange($event)"
+      aria-label="Selecionar página de usuários"
+    >
+    </mat-paginator>
+  </div>
+</div>
