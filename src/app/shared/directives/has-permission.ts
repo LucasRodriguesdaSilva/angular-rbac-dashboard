@@ -8,7 +8,7 @@ import { UserPermission } from '../../core/models/auth.models';
 })
 export class HasPermission {
   private authService = inject(AuthService)
-  private templateRef = inject(TemplateRef<any>)
+  private templateRef = inject(TemplateRef<unknown>)
   private viewContainer = inject(ViewContainerRef)
 
   private hasView = false

@@ -39,7 +39,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           refreshTokenSubject.next(null);
 
           return authService.refreshToken().pipe(
-            switchMap((newTokens: any) => {
+            switchMap((newTokens) => {
               isRefreshing = false;
               refreshTokenSubject.next(newTokens.accessToken);
 
