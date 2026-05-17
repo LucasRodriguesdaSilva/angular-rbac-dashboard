@@ -68,7 +68,7 @@ O ecossistema reativo da aplicação segue um pipeline previsível de eventos es
        [ Rota Ativada (Lazy Loading) ]        │                        └─► ErrorInterceptor (Captura 401/403)
                │                              │                                │
                └──────────────────────────────┴────────────────────────────────┴──► [ Logout / Auto-Refresh ]
-               
+
 ```
 
 
@@ -84,13 +84,13 @@ O ecossistema reativo da aplicação segue um pipeline previsível de eventos es
 Para validar o comportamento do sistema defensivo em tempo de execução, siga os cenários de simulação abaixo com o console do desenvolvedor (`F12`) aberto:
 
 ### Cenário 1: Fluxo de Usuário Comum (`USER`) e Disparo de Telemetria (SIEM)
-1. Acesse a tela de login e autentique-se com a conta comum: **`user@vitru.com`** / Senha: **`@Vitru123`**
+1. Acesse a tela de login e autentique-se com a conta comum: **`user@user.com`** / Senha: **`User@user123`**
 2. No painel principal, observe que os botões de edição e remoção do CRUD de usuários **não são renderizados no DOM** (validação da diretiva `*appHasPermission`).
 3. Force uma intrusão: Clique na barra de endereços do navegador e tente digitar manualmente a URL restrita: `http://localhost:4200/users`
 4. **Resultado Esperado:** O roteador aplicará o bloqueio imediatamente e te redirecionará de volta para o Dashboard. No Console do Desenvolvedor, um alerta vermelho estruturado contendo o payload do SIEM (`WARNING: Attempted unauthorized route access to /users`) será exibido.
 
 ### Cenário 2: Fluxo de Administrador (`ADMIN`) e Gestão de Incidentes
-1. Faça logout e entre com a conta master: **`admin@vitru.com`** / Senha: **`@Vitru123`**
+1. Faça logout e entre com a conta master: **`admin@admin.com`** / Senha: **`Senha@Forte2026`**
 2. Acesse a rota de Usuários (`/users`). Note que a listagem reativa renderiza todas as ações de escrita.
 3. Use o campo de busca. Digite rapidamente um termo e observe o comportamento do `debounceTime`: a tabela aguarda **300ms** após a digitação cessar para fazer o disparo estável do filtro.
 4. Navegue até o painel de **Audit Logs**. Role a listagem e repare na fluidez garantida pelo `CDK Virtual Scroll` ao processar centenas de eventos de segurança simulados.
