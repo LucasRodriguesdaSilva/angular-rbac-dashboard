@@ -1,4 +1,3 @@
-// src/app/core/mocks/auth-mock.backend.ts
 import { of, Observable, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { TokenResponse, User } from '../models/auth.models';

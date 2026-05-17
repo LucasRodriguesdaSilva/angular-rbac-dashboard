@@ -1,18 +1,24 @@
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from './auth-service';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { SecurityEvent, ThreatSeverity } from '../models/security-log.models';
+import { Storage } from './storage';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SecurityLog {
   private authService = inject(AuthService);
+  private storageService = inject(Storage);
+  private readonly STORAGE_KEY = 'siem_security_logs';
 
-  private securityLogSubject = new Subject<SecurityEvent>();
-  securityEvents$ = this.securityLogSubject.asObservable();
+  private logsSubject = new BehaviorSubject<SecurityEvent[]>(this.loadInitialLogs());
+  public securityEvents$: Observable<SecurityEvent[]> = this.logsSubject.asObservable();
 
-  private logsHistory: SecurityEvent[] = [];
+  private loadInitialLogs(): SecurityEvent[] {
+    const saved = this.storageService.getItem<SecurityEvent[]>(this.STORAGE_KEY);
+    return saved ? saved : [];
+  }
 
   logThreat(action: string, route: string, severity: ThreatSeverity, details?: string): void {
     const currentUser = this.authService.currentUserValue;
@@ -28,13 +34,16 @@ export class SecurityLog {
       details,
     };
 
-    this.logsHistory.push(securityEvent)
-    this.securityLogSubject.next(securityEvent)
+    const currentLogs = this.logsSubject.value;
+    const updatedLogs = [securityEvent, ...currentLogs];
 
-    console.warn(`[SIEM MOCK - ${severity}] Violação de Segurança Detectada:`, securityEvent);
+    this.storageService.setItem(this.STORAGE_KEY, updatedLogs);
+    this.logsSubject.next(updatedLogs);
+
+    console.warn(`[SIEM MOCK - ${severity}] Violação Detectada:`, securityEvent);
   }
 
-  getHistoricalLogs(): SecurityEvent[] {
-    return [...this.logsHistory]
+  getPersistedLogs(): SecurityEvent[] {
+    return this.logsSubject.value;
   }
 }
