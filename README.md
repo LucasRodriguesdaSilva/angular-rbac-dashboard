@@ -132,9 +132,4 @@ npm run test
 
 ```
 
----
-
-### 💡 Dica extra para a Entrevista:
-Agora, quando a banca olhar para o seu repositório, eles conseguirão testar o seu sistema funcional em menos de 2 minutos apenas seguindo o **Roteiro de Testes Manuais**. Isso demonstra clareza de processos e altíssimo nível de entrega profissional! O seu portfólio está impecável.
-
 
