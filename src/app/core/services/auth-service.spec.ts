@@ -14,7 +14,7 @@ describe('AuthService', () => {
 
   const mockUser: User = {
     id: 'usr_123',
-    email: 'admin@vitru.com',
+    email: 'admin@admin.com',
     name: 'Admin Blue Team',
     role: 'ADMIN',
     permissions: ['users.read', 'users.create', 'users.update', 'users.delete', 'logs.read'],
@@ -129,7 +129,7 @@ describe('AuthService', () => {
    it('deve restringir permissões administrativas para um usuário com papel de SUPPORT', () => {
     const supportUser: User = {
       id: 'usr_support_02',
-      email: 'support@vitru.com',
+      email: 'support@admin.com',
       name: 'Analista de Suporte',
       role: 'SUPPORT',
       permissions: ['users.read', 'logs.read'],
@@ -154,7 +154,7 @@ describe('AuthService', () => {
   it('deve bloquear QUALQUER permissão do sistema para um operador regular (USER)', () => {
     const regularUser: User = {
       id: 'usr_regular_03',
-      email: 'user@vitru.com',
+      email: 'user@admin.com',
       name: 'Operador Comum',
       role: 'USER',
       permissions: [], // Nenhuma permissão atribuída

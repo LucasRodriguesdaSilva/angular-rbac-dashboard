@@ -62,12 +62,12 @@ describe('Login', () => {
   });
 
   it.skip('deve chamar o fluxo de login do backend e redirecionar para o dashboard em caso de sucesso', async () => {
-  component.loginForm.get('email')?.setValue('admin@vitru.com');
+  component.loginForm.get('email')?.setValue('admin@admin.com');
   component.loginForm.get('password')?.setValue('Senha@Forte2026');
 
   const mockUserResponse = {
     tokens: { accessToken: 'access', refreshToken: 'refresh' },
-    user: { id: '1', email: 'admin@vitru.com', name: 'Admin', role: 'ADMIN' as const, permissions: [] }
+    user: { id: '1', email: 'admin@admin.com', name: 'Admin', role: 'ADMIN' as const, permissions: [] }
   };
 
   vi.spyOn(AuthMockBackend, 'login').mockImplementation(() => {
@@ -94,7 +94,7 @@ describe('Login', () => {
 
   it('deve tratar erros de autenticação mantendo o usuário na tela de login', async () => {
     // Arrange
-    component.loginForm.get('email')?.setValue('errado@vitru.com');
+    component.loginForm.get('email')?.setValue('errado@admin.com');
     component.loginForm.get('password')?.setValue('123456');
 
     vi.spyOn(AuthMockBackend, 'login').mockReturnValue(
