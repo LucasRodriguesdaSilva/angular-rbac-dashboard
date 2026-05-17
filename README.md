@@ -49,25 +49,27 @@ O painel do Blue Team exibe payloads reais de injeção capturados no sistema. P
 
 O ecossistema reativo da aplicação segue um pipeline previsível de eventos estruturado da seguinte forma:
 
-
-[ Usuário / Ator ]
-│
-▼
+```text
+[ Usuário / Ator ] 
+       │
+       ▼
 [ Camada de Visão (Componentes OnPush) ] ──(Interação / Input)──► [ Reactive Forms / Filtro Debounce ]
-│                                                                       │
-(Validação DOM / *appHasPermission)                                    (Dispara Request)
-│                                                                       │
-▼                                                                       ▼
+       │                                                                       │
+ (Validação DOM / *appHasPermission)                                    (Dispara Request)
+       │                                                                       │
+       ▼                                                                       ▼
 [ Roteador & Guards (PermissionGuard) ]                                [ HTTP Client / Core ]
-│                                                                       │
-├─► (Bloqueio se Inválido) ──► [ SecurityLogService (SIEM) ]            ▼
-│                                      ▲                 [ Interceptors Pipeline ]
-└─► (Se Autorizado)                    │                        │
-│                              │                        ├─► AuthInterceptor (Injeta Token)
-▼                              │                        │
-[ Rota Ativada (Lazy Loading) ]        │                        └─► ErrorInterceptor (Captura 401/403)
-│                              │                                │
-└──────────────────────────────┴────────────────────────────────┴──► [ Logout / Auto-Refresh ]
+       │                                                                       │
+       ├─► (Bloqueio se Inválido) ──► [ SecurityLogService (SIEM) ]            ▼
+       │                                      ▲                 [ Interceptors Pipeline ]
+       └─► (Se Autorizado)                    │                        │
+               │                              │                        ├─► AuthInterceptor (Injeta Token)
+               ▼                              │                        │
+       [ Rota Ativada (Lazy Loading) ]        │                        └─► ErrorInterceptor (Captura 401/403)
+               │                              │                                │
+               └──────────────────────────────┴────────────────────────────────┴──► [ Logout / Auto-Refresh ]
+               
+```
 
 
 1. **Autenticação:** O usuário submete as credenciais; o `AuthService` valida e armazena o *Access Token* estritamente em memória RAM.
