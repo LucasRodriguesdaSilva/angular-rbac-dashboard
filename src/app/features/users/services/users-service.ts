@@ -1,7 +1,7 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ListUsersParams, PaginatedUsers, UserManagement } from '../models/user.models';
-import { Observable } from 'rxjs';
+import { delay, Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -10,28 +10,67 @@ export class UsersService {
   private http = inject(HttpClient);
   private readonly baseUrl = '/api/users';
 
+  private MOCK_USERS: UserManagement[] = [
+    {
+      id: 'usr_admin_01',
+      name: 'Admin',
+      email: 'admin@admin.com',
+      role: 'ADMIN',
+      active: true,
+      createdAt: '2023-01-10T08:00:00Z',
+      permissions: ['users.read', 'users.create', 'users.update', 'users.delete', 'logs.read'],
+    },
+    {
+      id: 'usr_support_02',
+      name: 'Analista de Suporte',
+      email: 'support@suporte.com',
+      role: 'SUPPORT', // Lembre-se de adicionar 'SUPPORT' ao seu HTML na checagem de cores, se quiser!
+      active: true,
+      createdAt: '2023-05-20T14:30:00Z',
+      permissions: ['users.read', 'logs.read'],
+    },
+    {
+      id: 'usr_regular_03',
+      name: 'Operador Comum',
+      email: 'user@user.com',
+      role: 'USER',
+      active: true,
+      createdAt: '2024-02-15T09:15:00Z',
+      permissions: [], // Apenas visualiza o dashboard comum, sem acesso a dados sensíveis
+    },
+  ];
+
   /**
    * Lista os usuários salvos no banco
    * @param {ListUsersParams} params
    * @returns {Observable<PaginatedUsers>} PaginatedUsers
    */
   public listUsers(params: ListUsersParams): Observable<PaginatedUsers> {
-    let newHttpParams = new HttpParams()
-      .set('page', params.page.toString())
-      .set('limit', params.limit.toString());
+    let filteredUsers = [...this.MOCK_USERS];
 
-    if (params.filters) {
-      const filters = params.filters;
-      if (filters.search) {
-        newHttpParams = newHttpParams.set('search', filters.search);
-      }
-
-      if (filters.role) {
-        newHttpParams = newHttpParams.set('role', filters.role);
-      }
+    // Filtro de busca reativo (Nome ou E-mail)
+    if (params.filters?.search) {
+      const searchTerm = params.filters.search.toLowerCase();
+      filteredUsers = filteredUsers.filter(
+        (user) =>
+          user.name.toLowerCase().includes(searchTerm) ||
+          user.email.toLowerCase().includes(searchTerm),
+      );
     }
 
-    return this.http.get<PaginatedUsers>(this.baseUrl, { params: newHttpParams });
+    // Paginação
+    const total = filteredUsers.length;
+    const startIndex = (params.page - 1) * params.limit;
+    const endIndex = startIndex + params.limit;
+    const paginatedData = filteredUsers.slice(startIndex, endIndex);
+
+    // Retorno com delay para visualização do Loading/Blur
+    return of({
+      data: paginatedData,
+      total: total,
+      page: params.page,
+      limit: params.limit,
+    }).pipe(delay(800));
   }
 
   /**

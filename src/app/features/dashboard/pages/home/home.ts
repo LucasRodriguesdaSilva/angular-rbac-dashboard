@@ -4,11 +4,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { SecurityEvent } from '../../../../core/models/security-log.models';
 import { SecurityLog } from '../../../../core/services/security-log';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { HasPermission } from '../../../../shared/directives/has-permission';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatChipsModule],
+  imports: [CommonModule, MatCardModule, MatChipsModule, MatIconModule, MatListModule, HasPermission],
   templateUrl: './home.html',
   styleUrl: './home.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

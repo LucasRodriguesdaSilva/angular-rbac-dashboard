@@ -20,12 +20,11 @@ import {
   distinctUntilChanged,
   startWith,
   Subject,
-  switchMap,
+  map,
   takeUntil,
 } from 'rxjs';
-import { AuditService } from '../../services/audit-service';
-import { LogFilters } from '../../models/audit.models';
 import { SecurityLog } from '../../../../core/services/security-log';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-logs-list',
@@ -36,6 +35,7 @@ import { SecurityLog } from '../../../../core/services/security-log';
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
+    MatIconModule,
     MatChipsModule,
     ScrollingModule,
   ],
@@ -44,9 +44,10 @@ import { SecurityLog } from '../../../../core/services/security-log';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LogsList implements OnInit, OnDestroy {
-  private auditService = inject(AuditService);
+  // Mantemos apenas o serviço real de logs de segurança
+  private securityLogService = inject(SecurityLog);
   private cdr = inject(ChangeDetectorRef);
-  private securityLogService = inject(SecurityLog); // Injetar nova dependência
+
   public logs: SecurityEvent[] = [];
   public displayedColumns: string[] = ['timestamp', 'userEmail', 'action', 'route', 'severity'];
 
@@ -56,6 +57,7 @@ export class LogsList implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   public ngOnInit(): void {
+    // Inscreve-se nas mudanças de filtros da tela
     combineLatest([
       this.searchControl.valueChanges.pipe(
         startWith(''),
@@ -65,15 +67,33 @@ export class LogsList implements OnInit, OnDestroy {
       this.severityControl.valueChanges.pipe(startWith(null)),
     ])
       .pipe(
-        switchMap(([search, severity]) => {
-          const filters: LogFilters = { search, severity };
-          return this.auditService.getAuditLogs(filters);
+        map(([search, severity]) => {
+          // 1. Pega TODOS os logs reais gravados durante a sessão do usuário
+          let realLogs = this.securityLogService.getPersistedLogs();
+
+          // 2. Aplica o filtro de texto (Busca)
+          if (search) {
+            const term = search.toLowerCase();
+            realLogs = realLogs.filter(log =>
+              log.action.toLowerCase().includes(term) ||
+              (log.userEmail && log.userEmail.toLowerCase().includes(term)) ||
+              (log.route && log.route.toLowerCase().includes(term))
+            );
+          }
+
+          // 3. Aplica o filtro de Severidade (Chips)
+          if (severity) {
+            realLogs = realLogs.filter(log => log.severity === severity);
+          }
+
+          // 4. Ordena para que os ataques mais recentes apareçam no topo
+          return realLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
         }),
         takeUntil(this.destroy$),
       )
-      .subscribe((apiData) => {
-        const localLogs = this.securityLogService.getPersistedLogs();
-        this.logs = [...localLogs, ...apiData];
+      .subscribe((filteredLogs) => {
+        // Atualiza a tabela exclusivamente com os dados reais filtrados
+        this.logs = filteredLogs;
         this.cdr.markForCheck();
       });
   }

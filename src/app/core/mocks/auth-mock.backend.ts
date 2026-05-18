@@ -3,7 +3,6 @@ import { delay } from 'rxjs/operators';
 import { TokenResponse, User } from '../models/auth.models';
 
 export class AuthMockBackend {
-
   // "Banco de dados" em memória para simular perfis distintos de acessibilidade
   private static mockUsersDatabase: Record<string, { user: User; pass: string }> = {
     'admin@admin.com': {
@@ -13,8 +12,8 @@ export class AuthMockBackend {
         email: 'admin@admin.com',
         name: 'Admin',
         role: 'ADMIN',
-        permissions: ['users.read', 'users.create', 'users.update', 'users.delete', 'logs.read']
-      }
+        permissions: ['users.read', 'users.create', 'users.update', 'users.delete', 'logs.read'],
+      },
     },
     'support@suporte.com': {
       pass: 'Suporte@suporte123',
@@ -23,8 +22,8 @@ export class AuthMockBackend {
         email: 'support@suporte.com',
         name: 'Analista de Suporte',
         role: 'SUPPORT',
-        permissions: ['users.read', 'logs.read'] // Não cria, atualiza ou deleta usuários
-      }
+        permissions: ['users.read', 'logs.read'], // Não cria, atualiza ou deleta usuários
+      },
     },
     'user@user.com': {
       pass: 'User@user123',
@@ -33,9 +32,9 @@ export class AuthMockBackend {
         email: 'user@user.com',
         name: 'Operador Comum',
         role: 'USER',
-        permissions: [] // Apenas visualiza o dashboard comum, sem acesso a dados sensíveis
-      }
-    }
+        permissions: [], // Apenas visualiza o dashboard comum, sem acesso a dados sensíveis
+      },
+    },
   };
 
   static login(email: string, password: string): Observable<{ tokens: TokenResponse; user: User }> {
@@ -45,12 +44,14 @@ export class AuthMockBackend {
     if (account && account.pass === password) {
       const mockTokens: TokenResponse = {
         accessToken: `mock-jwt-access-token-for-${account.user.role.toLowerCase()}`,
-        refreshToken: `mock-jwt-refresh-token-for-${account.user.role.toLowerCase()}`
+        refreshToken: `mock-jwt-refresh-token-for-${account.user.role.toLowerCase()}`,
       };
 
       return of({ tokens: mockTokens, user: account.user }).pipe(delay(800));
     }
 
-    return throwError(() => new Error('Credenciais inválidas ou usuário inexistente.')).pipe(delay(800));
+    return throwError(() => new Error('Credenciais inválidas ou usuário inexistente.')).pipe(
+      delay(800),
+    );
   }
 }

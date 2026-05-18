@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -10,6 +10,7 @@ import { UsersService } from '../../services/users-service';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { ListUsersParams, UserManagement } from '../../models/user.models';
 import { PaginatedUsers } from '../../models/user.models';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-users-list',
   standalone: true,
@@ -20,15 +21,16 @@ import { PaginatedUsers } from '../../models/user.models';
     MatPaginatorModule,
     MatInputModule,
     MatFormFieldModule,
+    MatIconModule,
     MatProgressSpinnerModule,
   ],
   templateUrl: './users-list.html',
   styleUrl: './users-list.scss',
 })
-export class UsersList implements OnInit, OnDestroy{
+export class UsersList implements OnInit, OnDestroy {
   private usersService = inject(UsersService);
   private destroy$ = new Subject<void>();
-
+  private cdr = inject(ChangeDetectorRef);
   public dataSource = new MatTableDataSource<UserManagement>([]);
   public displayedColumns: string[] = ['name', 'email', 'role', 'status', 'createdAt'];
   public totalRecords = 0;
@@ -49,6 +51,11 @@ export class UsersList implements OnInit, OnDestroy{
   }
 
   private loadUsers(): void {
+    setTimeout(() => {
+      this.isLoading = true;
+      this.cdr.markForCheck();
+    });
+
     this.isLoading = true;
     const queryParams: ListUsersParams = {
       page: this.currentPage,
@@ -66,10 +73,13 @@ export class UsersList implements OnInit, OnDestroy{
         next: (response: PaginatedUsers) => {
           this.dataSource.data = response.data;
           this.totalRecords = response.total;
+
           this.isLoading = false;
+          this.cdr.detectChanges();
         },
         error: () => {
           this.isLoading = false;
+          this.cdr.detectChanges();
         },
       });
   }
@@ -78,8 +88,10 @@ export class UsersList implements OnInit, OnDestroy{
     this.searchControl.valueChanges
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(() => {
-        this.currentPage = 1;
-        this.loadUsers();
+        setTimeout(() => {
+          this.currentPage = 1;
+          this.loadUsers();
+        });
       });
   }
 

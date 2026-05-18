@@ -1,37 +1,81 @@
-<mat-card>
-  @if (isLoading) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-  }
+<div class="login-layout">
+  <div class="cyber-background"></div>
 
-  <mat-card-header>
-    <mat-card-title>Security Admin</mat-card-title>
-    <mat-card-subtitle>Acesse o painel de controle defensivo</mat-card-subtitle>
-  </mat-card-header>
-
-  <mat-card-content>
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>E-mail Corporativo</mat-label>
-        <input matInput type="email" formControlName="email" placeholder="ex: seuNome@email.com">
-        @if(loginForm.get('email')?.hasError('email')) {
-          <mat-error>Insira um endereço válido</mat-error>
-        }
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Chave de Acesso</mat-label>
-        <input matInput type="password" formControlName="password">
-      </mat-form-field>
-
-      @if(errorMessage) {
-        <div class="error-banner">
-          {{ errorMessage }}
-        </div>
+  <div class="login-container">
+    <mat-card class="login-card">
+      @if (isLoading) {
+        <mat-progress-bar
+          mode="indeterminate"
+          color="primary"
+          class="loading-bar"
+        ></mat-progress-bar>
       }
 
-      <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid || isLoading" class="full-width btn-submit">
-        Autenticar no Sistema
-      </button>
-    </form>
-  </mat-card-content>
-</mat-card>
+      <div class="brand-header">
+        <div class="icon-wrapper">
+          <mat-icon>security</mat-icon>
+        </div>
+        <h2>SecDevOps Platform</h2>
+        <p>Acesse o painel de controle defensivo</p>
+      </div>
+
+      <mat-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>E-mail Corporativo</mat-label>
+            <mat-icon matPrefix>person</mat-icon>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              placeholder="ex: admin@admin.com"
+              autocomplete="email"
+            />
+            @if (loginForm.get('email')?.hasError('email')) {
+              <mat-error>Insira um endereço corporativo válido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Chave de Acesso</mat-label>
+            <mat-icon matPrefix>lock</mat-icon>
+            <input
+              matInput
+              type="password"
+              formControlName="password"
+              autocomplete="current-password"
+            />
+          </mat-form-field>
+
+          @if (errorMessage) {
+            <div class="error-banner">
+              <mat-icon>warning</mat-icon>
+              <span>{{ errorMessage }}</span>
+            </div>
+          }
+
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="loginForm.invalid || isLoading || isBlocked"
+            class="btn-submit"
+            [ngClass]="{ 'bg-slate-300 text-slate-500': isBlocked }"
+          >
+            @if (isBlocked) {
+              <div><mat-icon class="mr-2">lock</mat-icon> Acesso Bloqueado</div>
+            } @else if (isLoading) {
+              Autenticando...
+            } @else {
+              Autenticar no Sistema
+            }
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="login-footer">
+      <p>&copy; 2026 Blue Team Operations. Acesso restrito a pessoal autorizado.</p>
+    </div>
+  </div>
+</div>

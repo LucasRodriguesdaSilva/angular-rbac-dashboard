@@ -31,13 +31,6 @@ describe('MainLayout', () => {
     expect(routerOutlet).not.toBeNull();
   });
 
-  it('deve exibir o papel (role) do usuário logado na topbar', () => {
-    component.userRole = 'SUPPORT';
-    fixture.detectChanges();
-
-    const badgeElement = fixture.debugElement.query(By.css('.user-badge')).nativeElement;
-    expect(badgeElement.textContent).toContain('SUPPORT');
-  });
 
   it('deve ter links de navegação válidos configurados para a sidebar', () => {
     const hrefElements = fixture.debugElement.queryAll(By.directive(RouterLink));

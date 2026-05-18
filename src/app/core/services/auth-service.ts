@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, delay, Observable, of, tap, throwError } from 'rxjs';
 import { TokenResponse, User, UserPermission } from '../models/auth.models';
 import { Storage } from './storage';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -37,6 +38,7 @@ export class AuthService {
   private accessTokenInMemory: string | null = null;
 
   private storageService = inject(Storage);
+  private router = inject(Router)
 
   constructor() {
     this.hydrateSession();
@@ -111,6 +113,7 @@ export class AuthService {
     this.storageService.removeItem(this.STORAGE_USER_SESSION_KEY);
     this.currentUserSubject$.next(null);
     this.accessTokenInMemory = null;
+    this.router.navigate(['/auth/login']);
   }
 
   /**
