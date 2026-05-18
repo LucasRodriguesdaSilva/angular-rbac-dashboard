@@ -1,0 +1,73 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>Painel de Monitoramento SecDevOps</h1>
+    <p>Visão geral de telemetria e ameaças detectadas.</p>
+  </header>
+
+  <div class="metrics-grid">
+    <mat-card class="metric-card primary">
+      <mat-card-header>
+        <mat-icon>security</mat-icon>
+        <mat-card-title>Total de Logs</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <span class="metric-value">{{ totalLogs }}</span>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card critical">
+      <mat-card-header>
+        <mat-icon>gavel</mat-icon>
+        <mat-card-title>Ameaças Críticas</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <span class="metric-value">{{ criticalThreats }}</span>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card warning">
+      <mat-card-header>
+        <mat-icon>warning</mat-icon>
+        <mat-card-title>Alertas de Segurança</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <span class="metric-value">{{ warningAlerts }}</span>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *appHasPermission="'logs.read'">
+    <mat-card  class="incidents-card">
+      <mat-card-header>
+        <mat-icon>list_alt</mat-icon>
+        <mat-card-title>Últimos Incidentes Interceptados</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+
+          @for (incident of recentIncidents; track incident.id) {
+            <mat-list-item>
+              <mat-icon matListItemIcon [ngClass]="{'text-red': incident.severity === 'CRITICAL', 'text-yellow': incident.severity === 'WARNING'}">
+                {{ incident.severity === 'CRITICAL' ? 'error' : 'warning' }}
+              </mat-icon>
+              <div matListItemTitle>
+                <strong>{{ incident.action }}</strong> - {{ incident.route }}
+              </div>
+              <div matListItemLine>
+                {{ incident.timestamp | date:'short' }} | Usuário: {{ incident.userEmail || 'Anônimo' }}
+              </div>
+            </mat-list-item>
+          }
+
+          @empty {
+            <mat-list-item>
+              <mat-icon matListItemIcon>check_circle</mat-icon>
+              <div matListItemTitle>Nenhuma ameaça detectada recentemente. O perímetro está seguro.</div>
+            </mat-list-item>
+          }
+
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

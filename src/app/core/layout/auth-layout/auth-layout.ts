@@ -11,11 +11,8 @@ import { RouterOutlet } from '@angular/router';
   </div> `,
   styles: [`
   .auth-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    width: 100vw;
+    min-height: 100dvh;
+    min-width: 100dvw;
     background-color: #f5f5f5;
   }
     `],

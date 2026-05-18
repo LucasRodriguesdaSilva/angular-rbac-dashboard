@@ -1,0 +1,135 @@
+<div class="container-fluid p-6 max-w-4xl mx-auto position-relative">
+  <div class="mb-6">
+    <h2 class="text-xl font-bold tracking-tight text-gray-900">
+      {{ isEditMode ? 'Modificar Credencial' : 'Provisionar Novo Usuário' }}
+    </h2>
+    <p class="text-sm text-gray-500">
+      Configure os privilégios e mapeie as permissões de acesso baseadas no Princípio do Menor
+      Privilégio.
+    </p>
+  </div>
+
+  @if (isLoading) {
+    <div class="position-absolute top-50 start-50 translate-middle z-3">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  }
+
+  <mat-card appearance="outlined" class="p-6 bg-white shadow-sm">
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Nome Completo</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="Ex: Admin Security Owner"
+            autocomplete="off"
+          />
+          @if (userForm.get('name')?.hasError('required')) {
+            <mat-error>Nome é obrigatório.</mat-error>
+          }
+
+          @if (userForm.get('name')?.hasError('minlength')) {
+            <mat-error>Mínimo de 3 caracteres.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Endereço de E-mail</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="nome@empresa.com"
+            autocomplete="off"
+          />
+          @if (userForm.get('email')?.hasError('required')) {
+            <mat-error>E-mail corporativo é obrigatório.</mat-error>
+          }
+
+          @if (userForm.get('email')?.hasError('email')) {
+            <mat-error>Informe um formato de e-mail válido e íntegro.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        @if (!isEditMode) {
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Senha Secreta de Acesso</mat-label>
+            <input matInput formControlName="password" type="password" placeholder="••••••••" />
+            @if (userForm.get('password')?.hasError('required')) {
+              <mat-error>Senha é obrigatória para provisionamento.</mat-error>
+            }
+
+            @if (userForm.get('password')?.hasError('weakPassword')) {
+              <mat-error>
+                Senha fraca! Exige: 8+ dígitos, 1 maiúscula, 1 minúscula, 1 número e 1 caractere
+                especial.
+              </mat-error>
+            }
+          </mat-form-field>
+        }
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Papel de Acesso (Role RBAC)</mat-label>
+          <mat-select formControlName="role">
+            @for (role of availableRoles; track $index) {
+              <mat-option [value]="role">{{ role }}</mat-option>
+            }
+          </mat-select>
+          @if (userForm.get('role')?.hasError('required')) {
+            <mat-error>Selecione uma atribuição de papel.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="my-2">
+        <mat-checkbox formControlName="active" color="primary"
+          >Conta Ativa e Habilitada</mat-checkbox
+        >
+      </div>
+
+      <hr class="border-gray-200 my-4" />
+
+      <div class="mb-4">
+        <h3 class="text-sm font-semibold text-gray-800 mb-2">
+          Atribuição Dinâmica de Claims (Permissões Específicas)
+        </h3>
+        <p class="text-xs text-gray-500 mb-4">
+          Selecione detalhadamente quais recursos do front-end e da API esse perfil poderá acionar.
+        </p>
+
+        <div class="flex flex-col gap-2 bg-gray-50 p-4 rounded-lg border border-gray-200">
+          @for (perm of availablePermissions; track $index) {
+            <div>
+              <mat-checkbox
+                [checked]="selectedPermissions.includes(perm.value)"
+                (change)="onPermissionChange(perm.value, $event.checked)"
+                color="primary"
+                class="text-sm text-gray-700"
+              >
+                {{ perm.label }} <code class="text-xs text-blue-600 ml-2">[{{ perm.value }}]</code>
+              </mat-checkbox>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-4">
+        <button mat-stroked-button type="button" routerLink="/users" [disabled]="isLoading">
+          Cancelar
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="userForm.invalid || isLoading"
+        >
+          {{ isEditMode ? 'Gravar Alterações' : 'Salvar e Provisionar' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div>
